@@ -15,7 +15,13 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
-  avatar: {
+  octopus: {
+    type: String
+  },
+  contact: {
+    type: String
+  },
+  points: {
     type: String
   },
   date: {

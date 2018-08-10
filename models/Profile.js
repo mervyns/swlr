@@ -12,10 +12,10 @@ const ProfileSchema = new Schema({
     required: true,
     max: 40
   },
-  company: {
+  octopus: {
     type: String
   },
-  website: {
+  contact: {
     type: String
   },
   location: {
