@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import { createProfile } from "../../actions/profileActions";
 import PropTypes from "prop-types";
 import TextFieldGroup from "../common/TextFieldGroup";
 import InputGroup from "../common/InputGroup";
 import SelectListGroup from "../common/SelectListGroup";
-
+import { createProfile, getCurrentProfile } from "../../actions/profileActions";
+import isEmpty from "../../validation/is-empty";
 class CreateProfile extends Component {
   constructor(props) {
     super(props);
@@ -23,13 +23,31 @@ class CreateProfile extends Component {
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
   }
-
+  componentDidMount() {
+    this.props.getCurrentProfile();
+  }
   componentWillReceiveProps(nextProps) {
     if (nextProps.errors) {
       this.setState({ errors: nextProps.errors });
     }
-  }
+    if (nextProps.profile.profile) {
+      const profile = nextProps.profile.profile;
+      // If profile field doesnt exist, make empty string
+      profile.octopus = !isEmpty(profile.octopus) ? profile.octopus : "";
+      profile.contact = !isEmpty(profile.contact) ? profile.contact : "";
+      profile.location = !isEmpty(profile.location) ? profile.location : "";
 
+      // Set component fields state
+      this.setState({
+        handle: profile.handle,
+        octopus: profile.octopus,
+        contact: profile.contact,
+        location: profile.location,
+        facebook: profile.facebook,
+        instagram: profile.instagram
+      });
+    }
+  }
   onSubmit(e) {
     e.preventDefault();
     const profileData = {
@@ -51,6 +69,7 @@ class CreateProfile extends Component {
     if (displaySocialInputs) {
       socialInputs = (
         <div>
+          />
           <InputGroup
             placeholder="Facebook Page URL"
             name="facebook"
@@ -82,11 +101,7 @@ class CreateProfile extends Component {
         <div className="container">
           <div className="row">
             <div className="col-md-8 m-auto">
-              <h1 className="display-4 text-center">Create Your Profile</h1>
-              <p className="lead text-center">
-                Please add in some information so that we can inform you of any
-                upcoming promotions
-              </p>
+              <h1 className="display-4 text-center">Edit Profile</h1>
               <small className="d-block pb-3">* = required fields</small>
               <form onSubmit={this.onSubmit}>
                 <TextFieldGroup
@@ -152,6 +167,8 @@ class CreateProfile extends Component {
   }
 }
 CreateProfile.propTypes = {
+  createProfile: PropTypes.func.isRequired,
+  getCurrentProfile: PropTypes.func.isRequired,
   profile: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired
 };
@@ -159,8 +176,7 @@ const mapStateToProps = state => ({
   profile: state.profile,
   errors: state.errors
 });
-
 export default connect(
   mapStateToProps,
-  { createProfile }
+  { createProfile, getCurrentProfile }
 )(withRouter(CreateProfile));
